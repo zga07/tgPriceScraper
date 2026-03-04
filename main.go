@@ -34,14 +34,14 @@ func main() {
 
 	bot.Handle("/books", func(c telebot.Context) error {
 		log.Printf("[%s] написал: %s", c.Sender().Username, c.Text())
-		userStates[c.Sender().ID] = "waiting_for_page"
+		userStates[c.Sender().ID] = "/books"
 		return c.Send("Какую страницу книг мне открыть? Пришли номер (от 1 до 50):")
 	})
 
 	bot.Handle(telebot.OnText, func(c telebot.Context) error {
 		userID := c.Sender().ID
 
-		if userStates[userID] == "waiting_for_page" {
+		if userStates[userID] == "/books" {
 			log.Printf("[%s] написал: %s", c.Sender().Username, c.Text())
 			pageNum, err := strconv.Atoi(c.Text())
 			if err != nil || pageNum < 1 || pageNum > 50 {
