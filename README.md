@@ -1,5 +1,5 @@
-# tgPriceScraper
-Бот для телеграм, который парсит сайт https://books.toscrape.com и скидывает все книги и цены с него
+# beerNotifierTgBot
+Бот для телеграм, который уведомляет всех своих пользователей об открытии бутылочки хмельного
 
 Чтобы запустить бота нужно:
 
@@ -7,7 +7,7 @@
   
   Создать в нём файл .env с токеном вашего бота с BotFather и данными для подключения к базе данных:
   
-    BOT_TOKEN=8322751926:AAEWYYTgmJiUBTyqQpVx9a3UriMvLXBEw1w
+    BOT_TOKEN=token
     DB_USER=user
     DB_PASSWORD=password
     DB_NAME=database
