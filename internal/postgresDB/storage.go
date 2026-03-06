@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"strconv"
+	"strings"
 )
 
 func InitDB() *sql.DB {
@@ -28,7 +30,8 @@ func CreateTable(db *sql.DB) {
 	CREATE TABLE IF NOT EXISTS users (
 		id SERIAL PRIMARY KEY,
 		tg_id BIGINT UNIQUE NOT NULL,
-		username TEXT
+		username TEXT,
+		leaderboard INT DEFAULT 0
 	);`
 	_, err := db.Exec(query)
 	if err != nil {
@@ -62,4 +65,44 @@ func GetAllUsers(db *sql.DB) []int64 {
 		}
 	}
 	return ids
+}
+
+func UpdateLeaderboard(db *sql.DB, tgId int64) {
+	query := `UPDATE users SET leaderboard = leaderboard + 1 WHERE tg_id = $1`
+	_, err := db.Exec(query, tgId)
+	if err != nil {
+		log.Println("Ошибка обновления страницы лидеров: ", err)
+	}
+}
+
+func DisplayLeaderboard(db *sql.DB) string {
+	query := `SELECT username, leaderboard FROM users ORDER BY leaderboard DESC LIMIT 10`
+	rows, err := db.Query(query)
+	if err != nil {
+		return "Ошибка получения топа из базы данных"
+	}
+	defer rows.Close()
+
+	var top strings.Builder
+
+	top.WriteString("Топ алкоголиков: \n")
+
+	i := 1
+	for rows.Next() {
+		var username string
+		var count int
+		rows.Scan(&username, &count)
+		top.WriteString(strconv.Itoa(i))
+		if username == "" {
+			top.WriteString(". алкаш без айдишки")
+		} else {
+			top.WriteString(". @")
+			top.WriteString(username)
+		}
+		top.WriteString(" - ")
+		top.WriteString(strconv.Itoa(count))
+		top.WriteString(" бутылок\n")
+		i++
+	}
+	return top.String()
 }
